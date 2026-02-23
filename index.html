@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyAI — Intelligent Study Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="page active">
+    <div class="login-container">
+        <div class="login-bg">
+            <div class="orb orb1"></div>
+            <div class="orb orb2"></div>
+            <div class="orb orb3"></div>
+            <div class="grid-overlay"></div>
+        </div>
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="brand-icon">⚡</div>
+                <h1>StudyAI</h1>
+                <p>Your intelligent academic companion</p>
+            </div>
+            <div class="login-tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+                <button class="tab-btn" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="you@university.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <div class="form-check">
+                    <label><input type="checkbox"> Remember me</label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn-primary">Sign In →</button>
+                <div class="demo-hint">Demo: any@email.com / password</div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="regFirstName" placeholder="Alex" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="regLastName" placeholder="Johnson" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" placeholder="you@university.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>University / Institution</label>
+                    <input type="text" id="regUniversity" placeholder="MIT, Stanford..." required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Min 8 characters" required>
+                </div>
+                <button type="submit" class="btn-primary">Create Account →</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appPage" class="page">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">⚡</div>
+            <span>StudyAI</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" onclick="showSection('dashboard', this)">
+                <span class="nav-icon">◈</span> Dashboard
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('timetable', this)">
+                <span class="nav-icon">◷</span> Timetable
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('subjects', this)">
+                <span class="nav-icon">◉</span> Subjects & Syllabus
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('performance', this)">
+                <span class="nav-icon">◈</span> Performance
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('notifications', this)">
+                <span class="nav-icon">◎</span> Notifications
+                <span class="badge">3</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('progress', this)">
+                <span class="nav-icon">◐</span> Progress
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info" id="userInfo">
+                <div class="user-avatar">A</div>
+                <div>
+                    <div class="user-name">Alex Johnson</div>
+                    <div class="user-email">alex@uni.edu</div>
+                </div>
+            </div>
+            <button onclick="logout()" class="logout-btn">↩ Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <div class="topbar-title" id="pageTitle">Dashboard</div>
+            <div class="topbar-actions">
+                <button class="icon-btn" onclick="showSection('notifications', document.querySelector('.nav-item:nth-child(5)'))">🔔</button>
+                <button class="icon-btn" onclick="toggleChatbot()">💬</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <section id="section-dashboard" class="content-section active">
+            <div class="section-header">
+                <h2>Welcome back, <span id="welcomeName">Alex</span> 👋</h2>
+                <p>Here's your study overview for today</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-value" id="totalSubjects">6</div>
+                    <div class="stat-label">Active Subjects</div>
+                </div>
+                <div class="stat-card accent">
+                    <div class="stat-icon">⏱</div>
+                    <div class="stat-value" id="todayHours">4.5h</div>
+                    <div class="stat-label">Today's Study</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value" id="weekProgress">73%</div>
+                    <div class="stat-label">Week Goal</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-value" id="urgentCount">2</div>
+                    <div class="stat-label">Urgent Deadlines</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Today's Schedule</h3>
+                        <button class="btn-small" onclick="showSection('timetable', document.querySelector('.nav-item:nth-child(2)'))">View All</button>
+                    </div>
+                    <div class="today-schedule" id="todaySchedule"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>AI Recommendations</h3>
+                        <span class="ai-badge">AI</span>
+                    </div>
+                    <div class="ai-tips" id="aiTips"></div>
+                </div>
+
+                <div class="card full-width">
+                    <div class="card-header">
+                        <h3>Subject Strength Analysis</h3>
+                        <span class="ai-badge">AI</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="strengthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIMETABLE SECTION -->
+        <section id="section-timetable" class="content-section">
+            <div class="section-header">
+                <h2>AI-Generated Timetable</h2>
+                <p>Optimized based on difficulty, exam proximity & your availability</p>
+            </div>
+            <div class="timetable-controls card">
+                <div class="control-group">
+                    <label>Study Hours Per Day</label>
+                    <input type="range" id="studyHoursRange" min="2" max="12" value="6" oninput="updateHoursDisplay(this.value)">
+                    <span id="hoursDisplay">6h</span>
+                </div>
+                <div class="control-group">
+                    <label>Availability</label>
+                    <div class="days-selector">
+                        <label class="day-check"><input type="checkbox" value="Mon" checked>Mon</label>
+                        <label class="day-check"><input type="checkbox" value="Tue" checked>Tue</label>
+                        <label class="day-check"><input type="checkbox" value="Wed" checked>Wed</label>
+                        <label class="day-check"><input type="checkbox" value="Thu" checked>Thu</label>
+                        <label class="day-check"><input type="checkbox" value="Fri" checked>Fri</label>
+                        <label class="day-check"><input type="checkbox" value="Sat">Sat</label>
+                        <label class="day-check"><input type="checkbox" value="Sun">Sun</label>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="generateTimetable()">⚡ Regenerate with AI</button>
+            </div>
+
+            <div class="timetable-wrapper card" id="timetableWrapper">
+                <div class="timetable-week" id="weeklyTimetable"></div>
+            </div>
+        </section>
+
+        <!-- SUBJECTS SECTION -->
+        <section id="section-subjects" class="content-section">
+            <div class="section-header">
+                <h2>Subjects & Syllabus</h2>
+                <p>Add subjects, modules and let AI sort them by difficulty</p>
+            </div>
+            <div class="subjects-layout">
+                <div class="card add-subject-form">
+                    <h3>Add New Subject</h3>
+                    <form onsubmit="addSubject(event)">
+                        <div class="form-group">
+                            <label>Subject Name</label>
+                            <input type="text" id="subjectName" placeholder="e.g. Quantum Physics" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Difficulty (1-10)</label>
+                                <input type="number" id="subjectDifficulty" min="1" max="10" value="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Exam Date</label>
+                                <input type="date" id="subjectExamDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Modules (comma-separated)</label>
+                            <textarea id="subjectModules" placeholder="Introduction, Core Theory, Applications, Advanced Topics..." rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Subject + AI Sort</button>
+                    </form>
+                </div>
+                <div class="subjects-list" id="subjectsList"></div>
+            </div>
+        </section>
+
+        <!-- PERFORMANCE SECTION -->
+        <section id="section-performance" class="content-section">
+            <div class="section-header">
+                <h2>Performance Tracking</h2>
+                <p>Log quiz scores and track your improvement with AI analysis</p>
+            </div>
+            <div class="performance-layout">
+                <div class="card">
+                    <h3>Log Test Score</h3>
+                    <form onsubmit="logScore(event)">
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select id="scoreSubject" required>
+                                <option value="">Select subject...</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Score (%)</label>
+                                <input type="number" id="scoreValue" min="0" max="100" required placeholder="78">
+                            </div>
+                            <div class="form-group">
+                                <label>Test Type</label>
+                                <select id="scoreType">
+                                    <option>Quiz</option>
+                                    <option>Midterm</option>
+                                    <option>Final</option>
+                                    <option>Practice</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes (weak areas)</label>
+                            <textarea id="scoreNotes" placeholder="e.g. struggled with integration problems..." rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Log Score + AI Analysis</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Score Trends</h3>
+                        <span class="ai-badge">AI Predicted</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3>Weak Areas Analysis</h3>
+                    <span class="ai-badge">AI</span>
+                </div>
+                <div class="weak-areas" id="weakAreas"></div>
+            </div>
+        </section>
+
+        <!-- NOTIFICATIONS SECTION -->
+        <section id="section-notifications" class="content-section">
+            <div class="section-header">
+                <h2>Notifications & Reminders</h2>
+                <p>Stay on top of deadlines and study goals</p>
+            </div>
+            <div class="notification-controls card">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Add Reminder</label>
+                        <input type="text" id="reminderText" placeholder="e.g. Revise Chapter 3 - Calculus">
+                    </div>
+                    <div class="form-group">
+                        <label>Date & Time</label>
+                        <input type="datetime-local" id="reminderTime">
+                    </div>
+                    <button class="btn-primary" onclick="addReminder()" style="margin-top:22px">+ Add</button>
+                </div>
+            </div>
+            <div class="notifications-list" id="notificationsList"></div>
+        </section>
+
+        <!-- PROGRESS SECTION -->
+        <section id="section-progress" class="content-section">
+            <div class="section-header">
+                <h2>Progress Tracker</h2>
+                <p>Visual overview of your complete study journey</p>
+            </div>
+            <div class="progress-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Weekly Study Hours</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="weeklyHoursChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Subject Coverage %</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="coverageChart"></canvas>
+                    </div>
+                </div>
+                <div class="card full-width">
+                    <div class="card-header">
+                        <h3>Overall Progress Timeline</h3>
+                        <span class="ai-badge">AI Prediction</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- AI CHATBOT -->
+<div class="chatbot-container" id="chatbotContainer">
+    <div class="chatbot-header">
+        <div class="chatbot-title">
+            <div class="chat-ai-dot"></div>
+            <span>StudyAI Assistant</span>
+        </div>
+        <button onclick="toggleChatbot()" class="close-chat">✕</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages">
+        <div class="chat-message bot">
+            <div class="msg-avatar">⚡</div>
+            <div class="msg-bubble">
+                Hi! I'm your AI study assistant. Ask me anything about your subjects, study strategies, or how to tackle difficult topics! 🎓
+            </div>
+        </div>
+    </div>
+    <div class="chat-suggestions" id="chatSuggestions">
+        <button onclick="sendSuggestion(this)">How to study effectively?</button>
+        <button onclick="sendSuggestion(this)">Help with my weak subjects</button>
+        <button onclick="sendSuggestion(this)">Explain a difficult concept</button>
+    </div>
+    <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+        <button onclick="sendChatMessage()" class="send-btn">↑</button>
+    </div>
+</div>
+<button class="chatbot-fab" onclick="toggleChatbot()" id="chatFab">💬</button>
+
+<!-- NOTIFICATION TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
